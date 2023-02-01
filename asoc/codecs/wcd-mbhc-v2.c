@@ -293,6 +293,12 @@ out_micb_en:
 		break;
 	/* MICBIAS usage change */
 	case WCD_EVENT_POST_DAPM_MICBIAS_2_OFF:
+		if (mbhc->mbhc_cfg->enable_usbc_analog &&
+			(mbhc->is_hs_recording == true)) {
+			WCD_MBHC_REG_UPDATE_BITS(WCD_MBHC_L_DET_EN, 0);
+			if (mbhc->mbhc_cb->clk_setup)
+				mbhc->mbhc_cb->clk_setup(mbhc->component, false);
+		}
 		mbhc->is_hs_recording = false;
 		pr_debug("%s: is_capture: %d\n", __func__,
 			  mbhc->is_hs_recording);
@@ -1099,7 +1105,8 @@ static void wcd_mbhc_swch_irq_handler(struct wcd_mbhc *mbhc)
 		wcd_mbhc_report_plug(mbhc, 0, jack_type);
 		extcon_set_state_sync(mbhc->extdev, extdev_type, 0);
 
-		if (mbhc->mbhc_cfg->enable_usbc_analog) {
+		if (mbhc->mbhc_cfg->enable_usbc_analog &&
+			(mbhc->is_hs_recording == false)) {
 			WCD_MBHC_REG_UPDATE_BITS(WCD_MBHC_L_DET_EN, 0);
 			if (mbhc->mbhc_cb->clk_setup)
 				mbhc->mbhc_cb->clk_setup(
