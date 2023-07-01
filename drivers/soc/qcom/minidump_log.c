@@ -1432,7 +1432,11 @@ static void register_pstore_info(void)
 }
 #endif
 
+#if !IS_MODULE(CONFIG_QCOM_MINIDUMP)
+static int __init msm_minidump_log_init(void)
+#else
 int msm_minidump_log_init(void)
+#endif
 {
 	register_kernel_sections();
 	is_vmap_stack = IS_ENABLED(CONFIG_VMAP_STACK);
@@ -1457,3 +1461,7 @@ int msm_minidump_log_init(void)
 #endif
 	return 0;
 }
+
+#if !IS_MODULE(CONFIG_QCOM_MINIDUMP)
+late_initcall(msm_minidump_log_init)
+#endif

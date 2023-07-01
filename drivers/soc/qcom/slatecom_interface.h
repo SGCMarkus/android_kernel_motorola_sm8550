@@ -45,7 +45,8 @@ struct subsys_state_ops {
 	void (*set_bt_state)(bool status);
 };
 
-struct subsys_state_ops state_ops;
+void slatecom_state_init(void (*fn1)(bool), void (*fn2)(bool));
+
 
 /*
  * Message header type - generic header structure
@@ -156,6 +157,12 @@ static inline int send_wlan_state(enum WMSlateCtrlChnlOpcode type)
 {
 	return 0;
 }
+#endif
+
+#ifdef CONFIG_COMPAT
+long compat_slate_com_ioctl(struct file *file, unsigned int cmd, unsigned long arg);
+#else
+#define compat_slate_com_ioctl NULL
 #endif
 
 #endif /* SLATECOM_INTERFACE_H */
